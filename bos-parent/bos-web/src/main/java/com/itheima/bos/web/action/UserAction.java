@@ -20,6 +20,7 @@ import java.util.List;
 public class UserAction extends BaseAction<User>{
 
     //接受页面提交的验证码
+	//wenjian
     private String checkcode;
 
     @Autowired
