@@ -5,6 +5,7 @@ import com.itheima.bos.service.UserService;
 import com.itheima.bos.utils.MD5Utils;
 import com.itheima.bos.utils.Menu;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.cxf.common.i18n.Exception;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.subject.Subject;
@@ -13,14 +14,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 
+import java.io.IOException;
 import java.util.List;
 
 @Controller
 @Scope("prototype")
 public class UserAction extends BaseAction<User>{
 
-    //接受页面提交的验证码
-	//wenjian
+    //接收页面提交的验证码
     private String checkcode;
 
     @Autowired
@@ -39,12 +40,7 @@ public class UserAction extends BaseAction<User>{
             //使用shiro框架提供的方式进行认证操作
             Subject subject = SecurityUtils.getSubject();
             UsernamePasswordToken token = new UsernamePasswordToken(model.getUsername(), MD5Utils.md5(model.getPassword()));
-            try {
-                subject.login(token);
-            }catch (Exception e){
-                e.printStackTrace();
-                return LOGIN;
-            }
+            subject.login(token);
             User user= (User) subject.getPrincipal();
             ServletActionContext.getRequest().getSession().setAttribute("loginUser",user);
             return "home";
@@ -59,13 +55,7 @@ public class UserAction extends BaseAction<User>{
 
     //用户添加方法
     public String add(){
-        try{
-            userService.add(model,rolelist);
-        }catch (Exception e){
-            e.printStackTrace();
-            this.addActionError("用户添加失败");
-            return null;
-        }
+        userService.add(model,rolelist);
         return "list";
     }
 
@@ -78,13 +68,7 @@ public class UserAction extends BaseAction<User>{
 
     //用户修改方法
     public String update(){
-        try{
-            userService.update(model);
-        }catch (Exception e){
-            e.printStackTrace();
-            this.addActionError("用户修改失败");
-            return null;
-        }
+        userService.update(model);
         return "list";
     }
 
@@ -95,7 +79,7 @@ public class UserAction extends BaseAction<User>{
         try{
             userService.delete(ids);
             ServletActionContext.getResponse().getWriter().print(true);
-        }catch (Exception e){
+        }catch (IOException e){
             e.printStackTrace();
         }
     }
